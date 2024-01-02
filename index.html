@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vJoy Script Generator</title>
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <pre id="txt"></pre>
+    <h1>Midi to vJoy Script Generator</h1>
+    <h3>Instructions</h3>
+    <p>Begin by selecting your MIDI device from the dropdown menu. Press an axis on the screen and move an analog MIDI control to bind it to the selected axis. For buttons, press on-screen and correspondingly tap the button on your MIDI controller multiple times to establish the link. Right clicking on the on-screen buttons and axes disables them. Right clicking again allows them to be remapped. Continue this process until all desired controls are mapped onto on-screen joysticks. Adjust the number of virtual joysticks using the joystick input, noting that all six will disable physical joysticks or controllers. Once mapping is complete, click "generate," and copy the code into a Python file. Ensure vJoy and Pygame are installed; if not, install them before closing the browser window. Configure your vJoy instance to match the joysticks you mapped your MIDI controller to. Run the script if prerequisites are already in place. Remember to always make sure the script is running before enabling your robot. You can use the IExpress program in your System32 folder to create an exe file from the Python script to make running the script easier.</p>
+    <h3>Limitations</h3>
+    <p>All of my MIDI controllers use pots instead of encoders, so I haven't tested them. Your milage may vary.</p>
+    <p>If you keep the browser window open before running the script. You will get an error because the MIDI device is already in use.</p>
+    <p>It is possible to use POV hats with vJoy but theres no sensible reason to unless you run out of buttons so I didn't implement that functionality.</p>
+    <p>This mapping is only one way. If you want to change the colors of the pads of your controller, or do any other shenanagins, you have to implement that yourself.</p>
+    <br>
+    <label for="midiInput">Select MIDI Input:</label>
+    <select id="midiInput">
+        <option disabled selected value="none">Choose a Device</option>
+    </select>
+    <br>
+    <label for="at">Ignored Messages (aftertouch, ect.) (seperated by a comma and no spaces)</label>
+    <input type="text" name="at" id="at" value="169" onchange="updateAt()">
+    <br>
+    <label for="joys">Number of Joysticks</label>
+    <input type="number" min="1" max="6" name="joys" id="joys" value="3" onchange="updateJoys()">
+    <br>
+    <button onclick="gen()">Generate</button>
+    <div class="joysticks columns">
+        <div id="j1" class="joystick">
+            <div class="title">Joystick 1</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a1-1" class="axis disabled" onclick="learnAxs(1, 1)" oncontextmenu="toggle(1, true, 1)">
+                    </div>
+                    <div id="a1-2" class="axis disabled" onclick="learnAxs(1, 2)" oncontextmenu="toggle(1, true, 2)">
+                    </div>
+                    <div id="a1-3" class="axis disabled" onclick="learnAxs(1, 3)" oncontextmenu="toggle(1, true, 3)">
+                    </div>
+                    <div id="a1-4" class="axis disabled" onclick="learnAxs(1, 4)" oncontextmenu="toggle(1, true, 4)">
+                    </div>
+                    <div id="a1-5" class="axis disabled" onclick="learnAxs(1, 5)" oncontextmenu="toggle(1, true, 5)">
+                    </div>
+                    <div id="a1-6" class="axis disabled" onclick="learnAxs(1, 6)" oncontextmenu="toggle(1, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b1-1" class="button disabled" onclick="learnBtn(1, 1)" oncontextmenu="toggle(1, false, 1)">
+                    </div>
+                    <div id="b1-2" class="button disabled" onclick="learnBtn(1, 2)" oncontextmenu="toggle(1, false, 2)">
+                    </div>
+                    <div id="b1-3" class="button disabled" onclick="learnBtn(1, 3)" oncontextmenu="toggle(1, false, 3)">
+                    </div>
+                    <div id="b1-4" class="button disabled" onclick="learnBtn(1, 4)" oncontextmenu="toggle(1, false, 4)">
+                    </div>
+                    <div id="b1-5" class="button disabled" onclick="learnBtn(1, 5)" oncontextmenu="toggle(1, false, 5)">
+                    </div>
+                    <div id="b1-6" class="button disabled" onclick="learnBtn(1, 6)" oncontextmenu="toggle(1, false, 6)">
+                    </div>
+                    <div id="b1-7" class="button disabled" onclick="learnBtn(1, 7)" oncontextmenu="toggle(1, false, 7)">
+                    </div>
+                    <div id="b1-8" class="button disabled" onclick="learnBtn(1, 8)" oncontextmenu="toggle(1, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b1-9" class="button disabled" onclick="learnBtn(1, 9)" oncontextmenu="toggle(1, false, 9)">
+                    </div>
+                    <div id="b1-10" class="button disabled" onclick="learnBtn(1, 10)"
+                        oncontextmenu="toggle(1, false, 10)"></div>
+                    <div id="b1-11" class="button disabled" onclick="learnBtn(1, 11)"
+                        oncontextmenu="toggle(1, false, 11)"></div>
+                    <div id="b1-12" class="button disabled" onclick="learnBtn(1, 12)"
+                        oncontextmenu="toggle(1, false, 12)"></div>
+                    <div id="b1-13" class="button disabled" onclick="learnBtn(1, 13)"
+                        oncontextmenu="toggle(1, false, 13)"></div>
+                    <div id="b1-14" class="button disabled" onclick="learnBtn(1, 14)"
+                        oncontextmenu="toggle(1, false, 14)"></div>
+                    <div id="b1-15" class="button disabled" onclick="learnBtn(1, 15)"
+                        oncontextmenu="toggle(1, false, 15)"></div>
+                    <div id="b1-16" class="button disabled" onclick="learnBtn(1, 16)"
+                        oncontextmenu="toggle(1, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+        <div id="j2" class="joystick">
+            <div class="title">Joystick 2</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a2-1" class="axis disabled" onclick="learnAxs(2, 1)" oncontextmenu="toggle(2, true, 1)">
+                    </div>
+                    <div id="a2-2" class="axis disabled" onclick="learnAxs(2, 2)" oncontextmenu="toggle(2, true, 2)">
+                    </div>
+                    <div id="a2-3" class="axis disabled" onclick="learnAxs(2, 3)" oncontextmenu="toggle(2, true, 3)">
+                    </div>
+                    <div id="a2-4" class="axis disabled" onclick="learnAxs(2, 4)" oncontextmenu="toggle(2, true, 4)">
+                    </div>
+                    <div id="a2-5" class="axis disabled" onclick="learnAxs(2, 5)" oncontextmenu="toggle(2, true, 5)">
+                    </div>
+                    <div id="a2-6" class="axis disabled" onclick="learnAxs(2, 6)" oncontextmenu="toggle(2, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b2-1" class="button disabled" onclick="learnBtn(2, 1)" oncontextmenu="toggle(2, false, 1)">
+                    </div>
+                    <div id="b2-2" class="button disabled" onclick="learnBtn(2, 2)" oncontextmenu="toggle(2, false, 2)">
+                    </div>
+                    <div id="b2-3" class="button disabled" onclick="learnBtn(2, 3)" oncontextmenu="toggle(2, false, 3)">
+                    </div>
+                    <div id="b2-4" class="button disabled" onclick="learnBtn(2, 4)" oncontextmenu="toggle(2, false, 4)">
+                    </div>
+                    <div id="b2-5" class="button disabled" onclick="learnBtn(2, 5)" oncontextmenu="toggle(2, false, 5)">
+                    </div>
+                    <div id="b2-6" class="button disabled" onclick="learnBtn(2, 6)" oncontextmenu="toggle(2, false, 6)">
+                    </div>
+                    <div id="b2-7" class="button disabled" onclick="learnBtn(2, 7)" oncontextmenu="toggle(2, false, 7)">
+                    </div>
+                    <div id="b2-8" class="button disabled" onclick="learnBtn(2, 8)" oncontextmenu="toggle(2, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b2-9" class="button disabled" onclick="learnBtn(2, 9)" oncontextmenu="toggle(2, false, 9)">
+                    </div>
+                    <div id="b2-10" class="button disabled" onclick="learnBtn(2, 10)"
+                        oncontextmenu="toggle(2, false, 10)"></div>
+                    <div id="b2-11" class="button disabled" onclick="learnBtn(2, 11)"
+                        oncontextmenu="toggle(2, false, 11)"></div>
+                    <div id="b2-12" class="button disabled" onclick="learnBtn(2, 12)"
+                        oncontextmenu="toggle(2, false, 12)"></div>
+                    <div id="b2-13" class="button disabled" onclick="learnBtn(2, 13)"
+                        oncontextmenu="toggle(2, false, 13)"></div>
+                    <div id="b2-14" class="button disabled" onclick="learnBtn(2, 14)"
+                        oncontextmenu="toggle(2, false, 14)"></div>
+                    <div id="b2-15" class="button disabled" onclick="learnBtn(2, 15)"
+                        oncontextmenu="toggle(2, false, 15)"></div>
+                    <div id="b2-16" class="button disabled" onclick="learnBtn(2, 16)"
+                        oncontextmenu="toggle(2, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+        <div id="j3" class="joystick">
+            <div class="title">Joystick 3</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a3-1" class="axis disabled" onclick="learnAxs(3, 1)" oncontextmenu="toggle(3, true, 1)">
+                    </div>
+                    <div id="a3-2" class="axis disabled" onclick="learnAxs(3, 2)" oncontextmenu="toggle(3, true, 2)">
+                    </div>
+                    <div id="a3-3" class="axis disabled" onclick="learnAxs(3, 3)" oncontextmenu="toggle(3, true, 3)">
+                    </div>
+                    <div id="a3-4" class="axis disabled" onclick="learnAxs(3, 4)" oncontextmenu="toggle(3, true, 4)">
+                    </div>
+                    <div id="a3-5" class="axis disabled" onclick="learnAxs(3, 5)" oncontextmenu="toggle(3, true, 5)">
+                    </div>
+                    <div id="a3-6" class="axis disabled" onclick="learnAxs(3, 6)" oncontextmenu="toggle(3, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b3-1" class="button disabled" onclick="learnBtn(3, 1)" oncontextmenu="toggle(3, false, 1)">
+                    </div>
+                    <div id="b3-2" class="button disabled" onclick="learnBtn(3, 2)" oncontextmenu="toggle(3, false, 2)">
+                    </div>
+                    <div id="b3-3" class="button disabled" onclick="learnBtn(3, 3)" oncontextmenu="toggle(3, false, 3)">
+                    </div>
+                    <div id="b3-4" class="button disabled" onclick="learnBtn(3, 4)" oncontextmenu="toggle(3, false, 4)">
+                    </div>
+                    <div id="b3-5" class="button disabled" onclick="learnBtn(3, 5)" oncontextmenu="toggle(3, false, 5)">
+                    </div>
+                    <div id="b3-6" class="button disabled" onclick="learnBtn(3, 6)" oncontextmenu="toggle(3, false, 6)">
+                    </div>
+                    <div id="b3-7" class="button disabled" onclick="learnBtn(3, 7)" oncontextmenu="toggle(3, false, 7)">
+                    </div>
+                    <div id="b3-8" class="button disabled" onclick="learnBtn(3, 8)" oncontextmenu="toggle(3, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b3-9" class="button disabled" onclick="learnBtn(3, 9)" oncontextmenu="toggle(3, false, 9)">
+                    </div>
+                    <div id="b3-10" class="button disabled" onclick="learnBtn(3, 10)"
+                        oncontextmenu="toggle(3, false, 10)"></div>
+                    <div id="b3-11" class="button disabled" onclick="learnBtn(3, 11)"
+                        oncontextmenu="toggle(3, false, 11)"></div>
+                    <div id="b3-12" class="button disabled" onclick="learnBtn(3, 12)"
+                        oncontextmenu="toggle(3, false, 12)"></div>
+                    <div id="b3-13" class="button disabled" onclick="learnBtn(3, 13)"
+                        oncontextmenu="toggle(3, false, 13)"></div>
+                    <div id="b3-14" class="button disabled" onclick="learnBtn(3, 14)"
+                        oncontextmenu="toggle(3, false, 14)"></div>
+                    <div id="b3-15" class="button disabled" onclick="learnBtn(3, 15)"
+                        oncontextmenu="toggle(3, false, 15)"></div>
+                    <div id="b3-16" class="button disabled" onclick="learnBtn(3, 16)"
+                        oncontextmenu="toggle(3, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="joysticks columns">
+        <div id="j4" class="joystick disabled">
+            <div class="title">Joystick 4</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a4-1" class="axis disabled" onclick="learnAxs(4, 1)" oncontextmenu="toggle(4, true, 1)">
+                    </div>
+                    <div id="a4-2" class="axis disabled" onclick="learnAxs(4, 2)" oncontextmenu="toggle(4, true, 2)">
+                    </div>
+                    <div id="a4-3" class="axis disabled" onclick="learnAxs(4, 3)" oncontextmenu="toggle(4, true, 3)">
+                    </div>
+                    <div id="a4-4" class="axis disabled" onclick="learnAxs(4, 4)" oncontextmenu="toggle(4, true, 4)">
+                    </div>
+                    <div id="a4-5" class="axis disabled" onclick="learnAxs(4, 5)" oncontextmenu="toggle(4, true, 5)">
+                    </div>
+                    <div id="a4-6" class="axis disabled" onclick="learnAxs(4, 6)" oncontextmenu="toggle(4, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b4-1" class="button disabled" onclick="learnBtn(4, 1)" oncontextmenu="toggle(4, false, 1)">
+                    </div>
+                    <div id="b4-2" class="button disabled" onclick="learnBtn(4, 2)" oncontextmenu="toggle(4, false, 2)">
+                    </div>
+                    <div id="b4-3" class="button disabled" onclick="learnBtn(4, 3)" oncontextmenu="toggle(4, false, 3)">
+                    </div>
+                    <div id="b4-4" class="button disabled" onclick="learnBtn(4, 4)" oncontextmenu="toggle(4, false, 4)">
+                    </div>
+                    <div id="b4-5" class="button disabled" onclick="learnBtn(4, 5)" oncontextmenu="toggle(4, false, 5)">
+                    </div>
+                    <div id="b4-6" class="button disabled" onclick="learnBtn(4, 6)" oncontextmenu="toggle(4, false, 6)">
+                    </div>
+                    <div id="b4-7" class="button disabled" onclick="learnBtn(4, 7)" oncontextmenu="toggle(4, false, 7)">
+                    </div>
+                    <div id="b4-8" class="button disabled" onclick="learnBtn(4, 8)" oncontextmenu="toggle(4, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b4-9" class="button disabled" onclick="learnBtn(4, 9)" oncontextmenu="toggle(4, false, 9)">
+                    </div>
+                    <div id="b4-10" class="button disabled" onclick="learnBtn(4, 10)"
+                        oncontextmenu="toggle(4, false, 10)"></div>
+                    <div id="b4-11" class="button disabled" onclick="learnBtn(4, 11)"
+                        oncontextmenu="toggle(4, false, 11)"></div>
+                    <div id="b4-12" class="button disabled" onclick="learnBtn(4, 12)"
+                        oncontextmenu="toggle(4, false, 12)"></div>
+                    <div id="b4-13" class="button disabled" onclick="learnBtn(4, 13)"
+                        oncontextmenu="toggle(4, false, 13)"></div>
+                    <div id="b4-14" class="button disabled" onclick="learnBtn(4, 14)"
+                        oncontextmenu="toggle(4, false, 14)"></div>
+                    <div id="b4-15" class="button disabled" onclick="learnBtn(4, 15)"
+                        oncontextmenu="toggle(4, false, 15)"></div>
+                    <div id="b4-16" class="button disabled" onclick="learnBtn(4, 16)"
+                        oncontextmenu="toggle(4, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+        <div id="j5" class="joystick disabled">
+            <div class="title">Joystick 5</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a5-1" class="axis disabled" onclick="learnAxs(5, 1)" oncontextmenu="toggle(5, true, 1)">
+                    </div>
+                    <div id="a5-2" class="axis disabled" onclick="learnAxs(5, 2)" oncontextmenu="toggle(5, true, 2)">
+                    </div>
+                    <div id="a5-3" class="axis disabled" onclick="learnAxs(5, 3)" oncontextmenu="toggle(5, true, 3)">
+                    </div>
+                    <div id="a5-4" class="axis disabled" onclick="learnAxs(5, 4)" oncontextmenu="toggle(5, true, 4)">
+                    </div>
+                    <div id="a5-5" class="axis disabled" onclick="learnAxs(5, 5)" oncontextmenu="toggle(5, true, 5)">
+                    </div>
+                    <div id="a5-6" class="axis disabled" onclick="learnAxs(5, 6)" oncontextmenu="toggle(5, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b5-1" class="button disabled" onclick="learnBtn(5, 1)" oncontextmenu="toggle(5, false, 1)">
+                    </div>
+                    <div id="b5-2" class="button disabled" onclick="learnBtn(5, 2)" oncontextmenu="toggle(5, false, 2)">
+                    </div>
+                    <div id="b5-3" class="button disabled" onclick="learnBtn(5, 3)" oncontextmenu="toggle(5, false, 3)">
+                    </div>
+                    <div id="b5-4" class="button disabled" onclick="learnBtn(5, 4)" oncontextmenu="toggle(5, false, 4)">
+                    </div>
+                    <div id="b5-5" class="button disabled" onclick="learnBtn(5, 5)" oncontextmenu="toggle(5, false, 5)">
+                    </div>
+                    <div id="b5-6" class="button disabled" onclick="learnBtn(5, 6)" oncontextmenu="toggle(5, false, 6)">
+                    </div>
+                    <div id="b5-7" class="button disabled" onclick="learnBtn(5, 7)" oncontextmenu="toggle(5, false, 7)">
+                    </div>
+                    <div id="b5-8" class="button disabled" onclick="learnBtn(5, 8)" oncontextmenu="toggle(5, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b5-9" class="button disabled" onclick="learnBtn(5, 9)" oncontextmenu="toggle(5, false, 9)">
+                    </div>
+                    <div id="b5-10" class="button disabled" onclick="learnBtn(5, 10)"
+                        oncontextmenu="toggle(5, false, 10)"></div>
+                    <div id="b5-11" class="button disabled" onclick="learnBtn(5, 11)"
+                        oncontextmenu="toggle(5, false, 11)"></div>
+                    <div id="b5-12" class="button disabled" onclick="learnBtn(5, 12)"
+                        oncontextmenu="toggle(5, false, 12)"></div>
+                    <div id="b5-13" class="button disabled" onclick="learnBtn(5, 13)"
+                        oncontextmenu="toggle(5, false, 13)"></div>
+                    <div id="b5-14" class="button disabled" onclick="learnBtn(5, 14)"
+                        oncontextmenu="toggle(5, false, 14)"></div>
+                    <div id="b5-15" class="button disabled" onclick="learnBtn(5, 15)"
+                        oncontextmenu="toggle(5, false, 15)"></div>
+                    <div id="b5-16" class="button disabled" onclick="learnBtn(5, 16)"
+                        oncontextmenu="toggle(5, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+        <div id="j6" class="joystick disabled">
+            <div class="title">Joystick 6</div>
+            <div class="columns">
+                <div class="axes">
+                    <div id="a6-1" class="axis disabled" onclick="learnAxs(6, 1)" oncontextmenu="toggle(6, true, 1)">
+                    </div>
+                    <div id="a6-2" class="axis disabled" onclick="learnAxs(6, 2)" oncontextmenu="toggle(6, true, 2)">
+                    </div>
+                    <div id="a6-3" class="axis disabled" onclick="learnAxs(6, 3)" oncontextmenu="toggle(6, true, 3)">
+                    </div>
+                    <div id="a6-4" class="axis disabled" onclick="learnAxs(6, 4)" oncontextmenu="toggle(6, true, 4)">
+                    </div>
+                    <div id="a6-5" class="axis disabled" onclick="learnAxs(6, 5)" oncontextmenu="toggle(6, true, 5)">
+                    </div>
+                    <div id="a6-6" class="axis disabled" onclick="learnAxs(6, 6)" oncontextmenu="toggle(6, true, 6)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b6-1" class="button disabled" onclick="learnBtn(6, 1)" oncontextmenu="toggle(6, false, 1)">
+                    </div>
+                    <div id="b6-2" class="button disabled" onclick="learnBtn(6, 2)" oncontextmenu="toggle(6, false, 2)">
+                    </div>
+                    <div id="b6-3" class="button disabled" onclick="learnBtn(6, 3)" oncontextmenu="toggle(6, false, 3)">
+                    </div>
+                    <div id="b6-4" class="button disabled" onclick="learnBtn(6, 4)" oncontextmenu="toggle(6, false, 4)">
+                    </div>
+                    <div id="b6-5" class="button disabled" onclick="learnBtn(6, 5)" oncontextmenu="toggle(6, false, 5)">
+                    </div>
+                    <div id="b6-6" class="button disabled" onclick="learnBtn(6, 6)" oncontextmenu="toggle(6, false, 6)">
+                    </div>
+                    <div id="b6-7" class="button disabled" onclick="learnBtn(6, 7)" oncontextmenu="toggle(6, false, 7)">
+                    </div>
+                    <div id="b6-8" class="button disabled" onclick="learnBtn(6, 8)" oncontextmenu="toggle(6, false, 8)">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <div id="b6-9" class="button disabled" onclick="learnBtn(6, 9)" oncontextmenu="toggle(6, false, 9)">
+                    </div>
+                    <div id="b6-10" class="button disabled" onclick="learnBtn(6, 10)"
+                        oncontextmenu="toggle(6, false, 10)"></div>
+                    <div id="b6-11" class="button disabled" onclick="learnBtn(6, 11)"
+                        oncontextmenu="toggle(6, false, 11)"></div>
+                    <div id="b6-12" class="button disabled" onclick="learnBtn(6, 12)"
+                        oncontextmenu="toggle(6, false, 12)"></div>
+                    <div id="b6-13" class="button disabled" onclick="learnBtn(6, 13)"
+                        oncontextmenu="toggle(6, false, 13)"></div>
+                    <div id="b6-14" class="button disabled" onclick="learnBtn(6, 14)"
+                        oncontextmenu="toggle(6, false, 14)"></div>
+                    <div id="b6-15" class="button disabled" onclick="learnBtn(6, 15)"
+                        oncontextmenu="toggle(6, false, 15)"></div>
+                    <div id="b6-16" class="button disabled" onclick="learnBtn(6, 16)"
+                        oncontextmenu="toggle(6, false, 16)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
